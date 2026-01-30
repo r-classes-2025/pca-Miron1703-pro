@@ -28,15 +28,14 @@ friends_tokens <- friends |>
 friends_tf <- friends_tokens |>
   count(speaker, word) |> 
   group_by(speaker) |> 
-  arrange(desc(n)) |>  
-  slice_head(n = 500) |>  
+  slice_max(n, n = 500, with_ties = FALSE) |>  # используем slice_max с with_ties = FALSE
   mutate(tf = n / sum(n)) |> 
+  select(speaker, word, tf) |>  # удаляем столбец n
   ungroup()
 
 # 4. преобразуйте в широкий формат; 
 # столбец c именем спикера превратите в имя ряда, используя подходящую функцию 
 friends_tf_wide <- friends_tf |> 
-  select(speaker, word, tf) |> 
   pivot_wider(names_from = word, values_from = tf, values_fill = 0) |> 
   column_to_rownames("speaker")
 
